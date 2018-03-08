@@ -1,0 +1,19 @@
+* revisao do modelo de compilação JIT e ligação com exercicios
+    * Jitter (just-in-time compiler) -- responsável pela tradução do código intermédio (IL ou bytecodes) para linguagem máquina.
+    * Construtor de classe
+    * slides
+    * verificação em tempo de execução
+* Introdução às duas categorias do Common Type System (CTS): tipos referência e tipos valor
+    * Comparação entre objectos e valores
+    * Detalhes sobre o layout de objectos (campos sync e htype)
+* Acesso programático ao descritor de tipo
+    * Object::GetType(), typeof, 1 instâncias para as várias instâncias de um tipo T 
+    * RuntimeTypeHandle (tipo valor)
+    * operador C# typeof -> IL ldtoken + Type.GetTypeFromHandle
+    * Operações sobre System.Type
+        * Propriedade BaseType
+        * IsSubclassOf e IsAssignableFrom
+* Coerção dinâmica de tipos
+    * operadores C# is, (type), as e instruções IL isinst e castclass
+* Carregamento dinâmico de código por via programática
+    * Assembly::LoadFrom() e Type::GetTypes()
