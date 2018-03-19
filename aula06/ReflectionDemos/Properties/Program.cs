@@ -1,11 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Threading;
+using LoggerLib;
 
 namespace PropertiesDemo
 {
+    public class MyFormatter : IFormatter
+    {
+        public void WriteLog(string memberName, Type memberType, object memberValue)
+        {
+            Console.WriteLine("** Name={0}, Type={1}, Value={2} **",
+                memberName, memberType, memberValue);
+        }
+    }
+
+    [Output(typeof(MyFormatter))]
     public class Properties
     {
         private int number;
@@ -18,6 +27,7 @@ namespace PropertiesDemo
             Console.WriteLine(number); // ldfld number...
         }
 
+        [Ignore]
         public DateTime Now
         {
             get
@@ -32,6 +42,7 @@ namespace PropertiesDemo
 
         public int Year { get; set; }
 
+        /*
         public int this[int idx]
         {
             get
@@ -39,6 +50,7 @@ namespace PropertiesDemo
                 return idx * 2;
             }
         }
+        */
 
         public int Number
         {
@@ -72,9 +84,11 @@ namespace PropertiesDemo
             // lança excepção
             // p1.Number = -1;
 
-            Console.WriteLine("Result of using the index property - {0} -", p1[5]);
+            //Console.WriteLine("Result of using the index property - {0} -", p1[5]);
 
             p1.Now = DateTime.Now.AddDays(1);
+
+            Logger.Log(p1);
         }
     }
 }
