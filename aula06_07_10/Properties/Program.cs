@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using LoggerLib;
 
@@ -73,9 +74,7 @@ namespace PropertiesDemo
         {
             Properties p1 = new Properties();
             p1.Number = 50;
-
             //       <=>
-
             Properties p2 = new Properties
             {
                 Number = 50
@@ -88,7 +87,26 @@ namespace PropertiesDemo
 
             p1.Now = DateTime.Now.AddDays(1);
 
-            Logger.Log(p1);
+            Logger logger = Logger.Build(p1.GetType());
+            logger.Log(p1);
+
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
+            Type t = p1.GetType();
+            PropertyInfo[] props = t.GetProperties();
+            Attribute attr = Attribute.GetCustomAttribute(
+                t, 
+                typeof(OutputAttribute)
+            );
+            watch.Stop();
+            Console.WriteLine(watch.ElapsedTicks);
+
+            foreach (PropertyInfo p in props)
+            {
+                watch.Restart();
+                object v = p.GetValue(p1);
+                Console.WriteLine(watch.ElapsedTicks);
+            }
         }
     }
 }

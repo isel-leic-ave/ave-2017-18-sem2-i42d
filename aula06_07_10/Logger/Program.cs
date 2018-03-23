@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace LoggerLib
@@ -37,23 +38,25 @@ namespace LoggerLib
 
     public class Logger
     {
-
-        public static void Log(object obj)
+        public static Logger Build(Type t)
         {
-            if (obj == null) return;
-            Type t = obj.GetType();
-            PropertyInfo[] properties = 
-                t.GetProperties();
-            // <=>
-            properties = t.GetProperties(
-                BindingFlags.Public | 
-                BindingFlags.Instance |
-                BindingFlags.Static);
+            return new Logger(t);
+        }
+
+        private IFormatter formatter;
+        private PropertyInfo[] filteredProperties;
+        private MethodInfo[] filteredMethods;
+
+        private Logger(Type t)
+        {
+            //this.t = t;
+
+            /* Phase 1: build formatter */
             Type ignoreType = typeof(IgnoreAttribute);
             Type outputType = typeof(OutputAttribute);
 
             // variable to store a reference to a formatter
-            IFormatter formatter = null;
+            formatter = null;
             // check if formatter is used for 't'
             Attribute attr =
                     Attribute.GetCustomAttribute(t, outputType);
@@ -77,21 +80,38 @@ namespace LoggerLib
                 formatter = new DefaultFormatter();
             }
 
-            foreach (PropertyInfo p in properties)
+            /* Phase 2: build relevant properties */
+            PropertyInfo[] props = t.GetProperties();
+            List<PropertyInfo> relevantProps = new List<PropertyInfo>();
+            foreach(PropertyInfo p in props)
             {
-                if (Attribute.IsDefined(
-                        p,
-                        ignoreType
-                     ))
+                if (!Attribute.IsDefined(p, ignoreType))
                 {
-                    continue;
+                    relevantProps.Add(p);
                 }
-                // <=>
-                if (p.IsDefined(ignoreType))
-                {
-                    continue;
-                }
+            }
+            filteredProperties = relevantProps.ToArray();
 
+            /* Phase 3: build relevant methods */
+            MethodInfo[] meths = t.GetMethods();
+            List<MethodInfo> relevantMeth = new List<MethodInfo>();
+            foreach (MethodInfo m in meths)
+            {
+                if (m.ReturnType != typeof(void) &&
+                    m.GetParameters().Length == 0)
+                {
+                    relevantMeth.Add(m);
+                }
+            }
+            filteredMethods = relevantMeth.ToArray();
+
+        }
+
+        public void Log(object obj)
+        {
+            if (obj == null) return;
+            foreach (PropertyInfo p in filteredProperties)
+            {
                 object value = p.GetValue(obj);
                 formatter.WriteLog(
                     p.Name,
@@ -101,20 +121,12 @@ namespace LoggerLib
                 // MethodInfo getter = p.GetGetMethod();
             }
 
-            MethodInfo[] methods = t.GetMethods(
-                BindingFlags.Public |
-                BindingFlags.Instance |
-                BindingFlags.Static);
-            foreach(MethodInfo m in methods)
+            foreach(MethodInfo m in filteredMethods)
             {
-                if (m.ReturnType != typeof(void) && 
-                    m.GetParameters().Length==0)
-                {
-                    Console.WriteLine("{0}({2}) = {1}", 
-                        m.Name,
-                        m.Invoke(obj, null),
-                        m.ReturnType);
-                }
+                Console.WriteLine("{0}({2}) = {1}", 
+                    m.Name,
+                    m.Invoke(obj, null),
+                    m.ReturnType);
             }
 
         }
