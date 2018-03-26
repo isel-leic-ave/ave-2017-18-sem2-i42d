@@ -10,6 +10,11 @@ namespace ValueTypes
     {
         public int a;
         public String b;
+        public SomeValue(int a, String b)
+        {
+            this.a = a;
+            this.b = b;
+        }
         public bool Equals(SomeValue v)
         {
             return a == v.a && b.Equals(v.b);
@@ -41,8 +46,14 @@ namespace ValueTypes
         {
             int i = 10;
             object o = i;
+            i = 20;
+
+
             SomeValue v = new SomeValue();
             object o2 = v;
+
+            SomeValue sv = new SomeValue();
+            Console.WriteLine(sv.ToString());
 
             int j = (int)o;
         }
@@ -50,7 +61,7 @@ namespace ValueTypes
 
         static void Main(string[] args)
         {
-            SomeValue v1 = new SomeValue();
+            SomeValue v1 = new SomeValue(10, "aaa");
             v1.a = 10;
             v1.b = new string(new char[] { 'a', 'b', 'b' });
 
