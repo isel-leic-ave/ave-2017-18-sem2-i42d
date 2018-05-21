@@ -17,9 +17,7 @@ namespace NBench
         }
 
         public static String bar()
-
         {
-
             String a = "ave ";
             for (int i = 0; i < 100; ++i)
                 a += i;

@@ -6,6 +6,14 @@ class DemoAssemblyBuilder
 {
     public static void Main()
     {
+        int i = 10;
+        object o = i;
+
+        String str = String.Format("{0}", "abc");
+
+        String a = "a", b = "b", c = "c";
+        String.Concat(a, b, c);
+
         // An assembly consists of one or more modules, each of which
         // contains zero or more types. This code creates a single-module
         // assembly, the most common case. The module contains one type,
