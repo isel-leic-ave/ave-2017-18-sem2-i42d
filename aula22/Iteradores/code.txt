@@ -1,0 +1,40 @@
+
+static class Utils
+{
+    public static T MyFirst<T>(this IEnumerable<T> list)
+    {
+        IEnumerator<T> it = list.GetEnumerator();
+        it.MoveNext();
+        return it.Current;
+    }
+
+    public static IEnumerable<T> ForEachAction<T>(this IEnumerable<T> list, Func<T, T> action)
+    {
+        foreach(T t in list)
+        {
+            yield return action(t);
+        }
+    }
+}
+
+
+=========================
+
+List<Student> list = new List<Student>();
+list.Add(new Student { number = 1, name = "a" });
+var query_where1 = from a in list
+                    where a.name.Contains("a")
+                    select a;
+
+var query_where2 = from a in list
+                    where a.name.Contains("a")
+                    select new
+                    {
+                        nome = a.name,
+                        numero = a.number
+                    };
+
+foreach (var c in query_where2)
+{
+    System.Console.WriteLine(c.GetType());
+}
